@@ -15,10 +15,17 @@ from .auth_views import (
     login_view, refresh_view, logout_view, me_view, 
     csrf_token_view, verify_token_view, complete_mfa_login_view
 )
-from .mfa_views import (
-    mfa_status, setup_totp, verify_totp_setup, disable_mfa,
-    verify_mfa, get_backup_codes, regenerate_backup_codes
-)
+try:
+    from .mfa_views import (
+        mfa_status, setup_totp, verify_totp_setup, disable_mfa,
+        verify_mfa, get_backup_codes, regenerate_backup_codes
+    )
+except ImportError:
+    # Fallback to stub implementation if pyotp is not available
+    from .mfa_views_stub import (
+        mfa_status, setup_totp, verify_totp_setup, disable_mfa,
+        verify_mfa, get_backup_codes, regenerate_backup_codes
+    )
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)

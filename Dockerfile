@@ -2,9 +2,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies including GDAL for GeoDjango
 RUN apt-get update && apt-get install -y \
     postgresql-client \
+    gdal-bin \
+    libgdal-dev \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

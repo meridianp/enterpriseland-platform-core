@@ -1,9 +1,8 @@
 """
-Google Cloud Run specific settings
-Simplified to avoid complex imports
+Transitional settings for Cloud Run deployment
+Gradually adding back functionality
 """
 import os
-import sys
 import dj_database_url
 from pathlib import Path
 from datetime import timedelta
@@ -11,15 +10,12 @@ from datetime import timedelta
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Add the project root to Python path
-sys.path.insert(0, str(BASE_DIR))
-
 # Basic settings
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-placeholder')
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
-# Application definition
+# Application definition - gradually adding apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,16 +30,13 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_spectacular',
     'storages',
-    'platform_core.accounts',
-    'platform_core.files',
-    'platform_core.notifications',
-    'platform_core.integrations',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -51,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'platform_core.core.urls_platform'
+ROOT_URLCONF = 'platform_core.core.urls_transitional'
 
 TEMPLATES = [
     {
@@ -71,7 +64,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'platform_core.wsgi.application'
 
-# Parse database URL from environment
+# Database
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     DATABASES = {
@@ -89,18 +82,10 @@ else:
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # Internationalization
@@ -122,8 +107,8 @@ USE_X_FORWARDED_PORT = True
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Auth model
-AUTH_USER_MODEL = 'accounts.User'
+# Note: We'll add AUTH_USER_MODEL after confirming accounts app works
+# AUTH_USER_MODEL = 'accounts.User'
 
 # REST Framework
 REST_FRAMEWORK = {
@@ -135,6 +120,7 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # JWT Configuration
@@ -147,7 +133,7 @@ SIMPLE_JWT = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(';')
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', '').split(';') if os.environ.get('CORS_ALLOWED_ORIGINS') else []
 
 # Cloud Run port
 PORT = int(os.environ.get('PORT', 8080))
@@ -178,4 +164,12 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
+}
+
+# Spectacular settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Platform Core API',
+    'DESCRIPTION': 'Core platform services for EnterpriseLand',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
