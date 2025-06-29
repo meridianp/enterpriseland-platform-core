@@ -14,10 +14,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# Make startup script executable
+RUN chmod +x startup.sh
+
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash platform && \
     chown -R platform:platform /app
 USER platform
 
-# Run migrations and start server
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "platform_core.wsgi:application"]
+# Set default port
+ENV PORT=8080
+
+# Run startup script
+CMD ["./startup.sh"]
