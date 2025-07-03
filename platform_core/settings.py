@@ -42,6 +42,16 @@ PLATFORM_APPS = [
     'platform_core.audit',
     'platform_core.encryption',
     'platform_core.api_keys',
+    'platform_core.modules',
+    'platform_core.gateway',
+    'platform_core.events',
+    'platform_core.websocket',
+    'platform_core.alerts',
+    'platform_core.monitoring',
+    'platform_core.performance',
+    'platform_core.caching',
+    'platform_core.cdn',
+    'platform_core.health',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PLATFORM_APPS
@@ -143,3 +153,114 @@ PLATFORM_CONFIG = {
     'ENCRYPTION_ENABLED': True,
     'API_KEY_ROTATION_ENABLED': True,
 }
+
+# Event System Configuration
+EVENT_BROKER = {
+    'type': os.environ.get('EVENT_BROKER_TYPE', 'redis'),  # rabbitmq, redis, kafka
+    'host': os.environ.get('EVENT_BROKER_HOST', 'localhost'),
+    'port': int(os.environ.get('EVENT_BROKER_PORT', '6379')),
+    'username': os.environ.get('EVENT_BROKER_USERNAME', 'guest'),
+    'password': os.environ.get('EVENT_BROKER_PASSWORD', 'guest'),
+    'vhost': os.environ.get('EVENT_BROKER_VHOST', '/'),
+    'db': int(os.environ.get('EVENT_BROKER_DB', '2')),  # For Redis
+    'bootstrap_servers': os.environ.get('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092').split(','),  # For Kafka
+    'group_id': os.environ.get('KAFKA_GROUP_ID', 'platform-core'),  # For Kafka
+    'prefetch_count': int(os.environ.get('EVENT_PREFETCH_COUNT', '1')),
+    'dead_letter_exchange': os.environ.get('EVENT_DLX', 'dlx'),
+    'message_ttl': int(os.environ.get('EVENT_MESSAGE_TTL', '86400000')),  # 24 hours
+}
+
+# Event System Settings
+EVENTS_AUTO_START = os.environ.get('EVENTS_AUTO_START', 'False').lower() == 'true'
+EVENTS_REQUIRE_SCHEMA = os.environ.get('EVENTS_REQUIRE_SCHEMA', 'True').lower() == 'true'
+EVENTS_BATCH_FAIL_FAST = os.environ.get('EVENTS_BATCH_FAIL_FAST', 'True').lower() == 'true'
+EVENT_DEFAULT_QUEUE = os.environ.get('EVENT_DEFAULT_QUEUE', 'default-events')
+
+# Event Routing Rules (optional)
+EVENT_ROUTING_RULES = [
+    {
+        'event_types': ['*.error', '*.failed'],
+        'match_type': 'pattern',
+        'target': 'error-events',
+        'priority': 100
+    },
+    {
+        'event_types': ['user.*'],
+        'match_type': 'pattern',
+        'target': 'user-events',
+        'priority': 50
+    },
+    {
+        'event_types': ['order.*'],
+        'match_type': 'pattern',
+        'target': 'order-events',
+        'priority': 50
+    }
+]
+
+# Django Channels Configuration
+ASGI_APPLICATION = 'platform_core.routing.application'
+
+# Channel Layers
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(
+                os.environ.get('REDIS_HOST', 'localhost'),
+                int(os.environ.get('REDIS_PORT', '6379'))
+            )],
+            'capacity': 100,
+            'expiry': 10,
+        },
+    },
+}
+
+# WebSocket Configuration
+WEBSOCKET_ALLOWED_ORIGINS = os.environ.get(
+    'WEBSOCKET_ALLOWED_ORIGINS',
+    'http://localhost:3000,http://localhost:8000'
+).split(',')
+
+WEBSOCKET_MAX_CONNECTIONS_PER_USER = int(os.environ.get('WEBSOCKET_MAX_CONNECTIONS_PER_USER', '5'))
+WEBSOCKET_MAX_MESSAGE_SIZE = int(os.environ.get('WEBSOCKET_MAX_MESSAGE_SIZE', '65536'))  # 64KB
+
+# WebSocket Rate Limiting
+WEBSOCKET_RATE_LIMITS = {
+    'default': {
+        'messages': int(os.environ.get('WEBSOCKET_RATE_LIMIT_DEFAULT', '60')),
+        'window': 60  # 1 minute
+    },
+    'authenticated': {
+        'messages': int(os.environ.get('WEBSOCKET_RATE_LIMIT_AUTH', '120')),
+        'window': 60  # 1 minute
+    }
+}
+
+# Alert System Configuration
+ALERT_RETENTION_DAYS = int(os.environ.get('ALERT_RETENTION_DAYS', '30'))
+ALERT_SUMMARY_RECIPIENTS = os.environ.get('ALERT_SUMMARY_RECIPIENTS', '').split(',')
+
+# Email Configuration
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'alerts@enterpriseland.com')
+
+# Metrics Configuration
+METRICS_ENABLED = os.environ.get('METRICS_ENABLED', 'True').lower() == 'true'
+METRICS_REQUIRE_AUTH = os.environ.get('METRICS_REQUIRE_AUTH', 'False').lower() == 'true'
+
+# Performance Profiling
+PROFILING_ENABLED = os.environ.get('PROFILING_ENABLED', 'False').lower() == 'true'
+PROFILING_SAMPLE_RATE = float(os.environ.get('PROFILING_SAMPLE_RATE', '0.1'))
+
+# CDN Configuration
+CDN_ENABLED = os.environ.get('CDN_ENABLED', 'False').lower() == 'true'
+CDN_PROVIDER = os.environ.get('CDN_PROVIDER', 'cloudflare')
+CDN_BASE_URL = os.environ.get('CDN_BASE_URL', '')
+CDN_API_KEY = os.environ.get('CDN_API_KEY', '')
+CDN_ZONE_ID = os.environ.get('CDN_ZONE_ID', '')

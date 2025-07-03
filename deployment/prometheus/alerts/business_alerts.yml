@@ -1,0 +1,92 @@
+# Business Metric Alert Rules for EnterpriseLand
+
+groups:
+  - name: business_alerts
+    interval: 60s
+    rules:
+      # Low User Activity
+      - alert: LowUserActivity
+        expr: |
+          (
+            business_users_active / business_users_total
+          ) < 0.1
+        for: 1h
+        labels:
+          severity: warning
+          team: product
+        annotations:
+          summary: "Low user activity detected"
+          description: "Only {{ $value | humanizePercentage }} of users are active"
+          runbook_url: "https://docs.enterpriseland.com/runbooks/low-activity"
+
+      # No New Leads
+      - alert: NoNewLeads
+        expr: |
+          increase(business_leads_total[1h]) == 0
+        for: 2h
+        labels:
+          severity: warning
+          team: sales
+        annotations:
+          summary: "No new leads in the last hour"
+          description: "Lead generation has stopped"
+          runbook_url: "https://docs.enterpriseland.com/runbooks/no-leads"
+
+      # Deal Conversion Rate Drop
+      - alert: DealConversionRateDrop
+        expr: |
+          (
+            rate(business_deals_converted[1h]) / 
+            rate(business_deals_created[1h])
+          ) < 0.05
+        for: 2h
+        labels:
+          severity: warning
+          team: sales
+        annotations:
+          summary: "Deal conversion rate has dropped"
+          description: "Conversion rate is {{ $value | humanizePercentage }}"
+          runbook_url: "https://docs.enterpriseland.com/runbooks/low-conversion"
+
+      # Assessment Processing Delays
+      - alert: AssessmentProcessingDelay
+        expr: |
+          (
+            business_assessments_pending > 100
+            and
+            rate(business_assessments_processed[1h]) < 10
+          )
+        for: 30m
+        labels:
+          severity: warning
+          team: operations
+        annotations:
+          summary: "Assessment processing is delayed"
+          description: "{{ $value }} assessments pending with low processing rate"
+          runbook_url: "https://docs.enterpriseland.com/runbooks/assessment-delay"
+
+      # Market Intelligence Feed Down
+      - alert: MarketIntelligenceFeedDown
+        expr: |
+          increase(market_intelligence_articles_total[1h]) == 0
+        for: 2h
+        labels:
+          severity: critical
+          team: data
+        annotations:
+          summary: "Market intelligence feed not updating"
+          description: "No new articles in the last 2 hours"
+          runbook_url: "https://docs.enterpriseland.com/runbooks/feed-down"
+
+      # High Lead Score Anomaly
+      - alert: LeadScoreAnomaly
+        expr: |
+          stddev_over_time(lead_score_average[1h]) > 20
+        for: 30m
+        labels:
+          severity: warning
+          team: data
+        annotations:
+          summary: "Lead scoring showing anomalies"
+          description: "Lead score standard deviation is {{ $value }}"
+          runbook_url: "https://docs.enterpriseland.com/runbooks/score-anomaly"

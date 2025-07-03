@@ -1,0 +1,250 @@
+name: investment
+version: 1.0.0
+display_name: Investment Management
+description: Comprehensive investment lifecycle management including market intelligence, lead management, deal workspace, and partner assessment
+author: EnterpriseLand Team
+homepage: https://enterpriseland.com/modules/investment
+
+# Module metadata
+metadata:
+  category: business
+  tags:
+    - investment
+    - market-intelligence
+    - lead-management
+    - deal-management
+    - assessment
+  icon: investment
+  color: "#215788"
+
+# Platform requirements
+platform:
+  min_version: 1.0.0
+  max_version: 2.0.0
+
+# Dependencies
+dependencies:
+  - name: platform_core
+    version: ">=1.0.0"
+  - name: viewflow
+    version: ">=2.2.0"
+
+# Services provided by this module
+provides:
+  services:
+    - name: market_intelligence
+      interface: business_modules.investment.interfaces.MarketIntelligenceService
+      description: News discovery and target identification
+    
+    - name: lead_management
+      interface: business_modules.investment.interfaces.LeadManagementService
+      description: Lead scoring and workflow automation
+    
+    - name: deal_workspace
+      interface: business_modules.investment.interfaces.DealWorkspaceService
+      description: Deal lifecycle and collaboration
+    
+    - name: assessment
+      interface: business_modules.investment.interfaces.AssessmentService
+      description: Partner assessment and evaluation
+
+  models:
+    - Assessment
+    - DevelopmentPartner
+    - PBSAScheme
+    - TargetCompany
+    - Lead
+    - Deal
+    - NewsArticle
+
+  workflows:
+    - name: lead_qualification
+      description: Automated lead qualification workflow
+      
+    - name: deal_approval
+      description: Deal approval and IC pack generation
+      
+    - name: assessment_review
+      description: Assessment review and approval
+
+# Module configuration schema
+configuration:
+  schema:
+    type: object
+    properties:
+      market_intelligence:
+        type: object
+        properties:
+          news_sources:
+            type: array
+            items:
+              type: string
+            default: []
+          
+          discovery_interval:
+            type: integer
+            description: Hours between discovery runs
+            default: 6
+          
+          ai_scoring_enabled:
+            type: boolean
+            default: true
+      
+      lead_management:
+        type: object
+        properties:
+          auto_qualification_threshold:
+            type: number
+            minimum: 0
+            maximum: 100
+            default: 70
+          
+          assignment_rules_enabled:
+            type: boolean
+            default: true
+          
+          follow_up_days:
+            type: integer
+            default: 7
+      
+      deal_workspace:
+        type: object
+        properties:
+          workflow_automation_enabled:
+            type: boolean
+            default: true
+          
+          document_versioning:
+            type: boolean
+            default: true
+          
+          ic_pack_template:
+            type: string
+            default: "standard"
+
+# Permissions required
+permissions:
+  - platform.modules.install
+  - platform.cache.read
+  - platform.cache.write
+  - platform.events.publish
+  - platform.websocket.connect
+  - platform.workflow.execute
+
+# API endpoints exposed
+api:
+  prefix: /api/investment
+  version: v1
+  endpoints:
+    - path: /market-intel/
+      methods: [GET, POST]
+      description: Market intelligence endpoints
+      
+    - path: /leads/
+      methods: [GET, POST, PUT, DELETE]
+      description: Lead management endpoints
+      
+    - path: /deals/
+      methods: [GET, POST, PUT, DELETE]
+      description: Deal workspace endpoints
+      
+    - path: /assessments/
+      methods: [GET, POST, PUT, DELETE]
+      description: Assessment endpoints
+
+# UI components
+ui:
+  components:
+    - name: MarketIntelligenceDashboard
+      path: components/MarketIntelligenceDashboard
+      description: Real-time market intelligence dashboard
+      
+    - name: LeadPipeline
+      path: components/LeadPipeline
+      description: Lead pipeline visualization
+      
+    - name: DealWorkspace
+      path: components/DealWorkspace
+      description: Collaborative deal workspace
+      
+    - name: AssessmentForm
+      path: components/AssessmentForm
+      description: Dynamic assessment forms
+
+# Event subscriptions
+events:
+  subscribes:
+    - event_type: user.login
+      handler: handlers.track_user_activity
+      
+    - event_type: workflow.completed
+      handler: handlers.update_deal_status
+  
+  publishes:
+    - event_type: lead.created
+      description: New lead created
+      
+    - event_type: lead.qualified
+      description: Lead qualified for follow-up
+      
+    - event_type: deal.stage_changed
+      description: Deal moved to new stage
+      
+    - event_type: assessment.submitted
+      description: Assessment submitted for review
+
+# WebSocket channels
+websocket:
+  channels:
+    - name: market-intel
+      description: Real-time market intelligence updates
+      
+    - name: deal-updates
+      description: Live deal status updates
+      
+    - name: lead-activity
+      description: Lead activity stream
+
+# Background tasks
+tasks:
+  - name: discover_news
+    schedule: "0 */6 * * *"  # Every 6 hours
+    handler: tasks.discover_news
+    
+  - name: score_leads
+    schedule: "0 2 * * *"  # Daily at 2 AM
+    handler: tasks.score_leads_batch
+    
+  - name: process_overdue_leads
+    schedule: "0 9 * * *"  # Daily at 9 AM
+    handler: tasks.process_overdue_leads
+
+# Module lifecycle hooks
+hooks:
+  install: hooks.on_install
+  enable: hooks.on_enable
+  disable: hooks.on_disable
+  uninstall: hooks.on_uninstall
+  upgrade: hooks.on_upgrade
+
+# Health checks
+health:
+  checks:
+    - name: database_connection
+      handler: health.check_database
+      critical: true
+      
+    - name: cache_connection
+      handler: health.check_cache
+      critical: false
+      
+    - name: event_broker
+      handler: health.check_events
+      critical: false
+
+# Module resources
+resources:
+  database_tables: 15
+  cache_keys_prefix: "investment:"
+  file_storage_path: "investment/"
+  estimated_size_mb: 100

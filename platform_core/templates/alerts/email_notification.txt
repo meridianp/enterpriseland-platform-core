@@ -1,0 +1,35 @@
+{{ title }}
+================================================================================
+
+{{ message }}
+
+{% if description %}{{ description }}{% endif %}
+
+Alert Details:
+--------------
+Current Value: {{ value }}
+Condition: {{ condition }} {{ threshold }}
+Time: {{ fired_at }}
+
+{% if labels %}
+Labels:
+{% for key, value in labels.items %}
+- {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+
+{% if annotations %}
+Annotations:
+{% for key, value in annotations.items %}
+- {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+
+Actions:
+--------
+View Dashboard: {{ dashboard_url }}
+Acknowledge Alert: {{ acknowledge_url }}
+
+--------------------------------------------------------------------------------
+This is an automated alert from EnterpriseLand Monitoring System.
+To manage your notification preferences, visit your account settings.

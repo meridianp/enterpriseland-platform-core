@@ -1,0 +1,99 @@
+# Alertmanager Configuration
+
+global:
+  # The smarthost and SMTP sender used for mail notifications.
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'alerts@enterpriseland.com'
+  smtp_auth_username: 'alerts@enterpriseland.com'
+  smtp_auth_password: 'your-smtp-password'
+  
+  # Slack webhook URL
+  slack_api_url: 'YOUR_SLACK_WEBHOOK_URL'
+
+# The directory from which notification templates are read.
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# The root route on which each incoming alert enters.
+route:
+  # The labels by which incoming alerts are grouped together
+  group_by: ['alertname', 'cluster', 'service']
+  
+  # When a new group of alerts is created by an incoming alert
+  group_wait: 10s
+  
+  # When the first notification was sent, wait 'group_interval' to send a batch
+  group_interval: 5m
+  
+  # If an alert has successfully been sent, wait 'repeat_interval' to resend them
+  repeat_interval: 12h
+  
+  # A default receiver
+  receiver: team-backend
+  
+  # Child routes
+  routes:
+    # Critical alerts go to PagerDuty
+    - match:
+        severity: critical
+      receiver: pagerduty-critical
+      continue: true
+    
+    # Infrastructure alerts
+    - match:
+        team: infrastructure
+      receiver: team-infrastructure
+    
+    # Business alerts
+    - match:
+        team: product
+      receiver: team-product
+    
+    # Database alerts
+    - match_re:
+        alertname: ^(Database|PostgreSQL).*
+      receiver: team-database
+
+# Inhibition rules allow to mute a set of alerts given that another alert is firing
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
+
+receivers:
+  - name: 'team-backend'
+    email_configs:
+      - to: 'backend-team@enterpriseland.com'
+        headers:
+          Subject: 'EnterpriseLand Alert: {{ .GroupLabels.alertname }}'
+    slack_configs:
+      - channel: '#backend-alerts'
+        title: 'Alert: {{ .GroupLabels.alertname }}'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        send_resolved: true
+
+  - name: 'team-infrastructure'
+    email_configs:
+      - to: 'infra-team@enterpriseland.com'
+    slack_configs:
+      - channel: '#infra-alerts'
+        title: 'Infrastructure Alert: {{ .GroupLabels.alertname }}'
+
+  - name: 'team-product'
+    email_configs:
+      - to: 'product-team@enterpriseland.com'
+    slack_configs:
+      - channel: '#product-alerts'
+
+  - name: 'team-database'
+    email_configs:
+      - to: 'dba-team@enterpriseland.com'
+    slack_configs:
+      - channel: '#database-alerts'
+
+  - name: 'pagerduty-critical'
+    pagerduty_configs:
+      - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY'
+        description: 'Critical Alert: {{ .GroupLabels.alertname }}'

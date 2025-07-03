@@ -10,4 +10,11 @@ urlpatterns = [
     path('api/agents/', include('platform_core.agents.urls')),
     path('api/audit/', include('platform_core.audit.urls')),
     path('api/api-keys/', include('platform_core.api_keys.urls')),
+    path('api/modules/', include('platform_core.modules.urls')),
+    path('api/gateway/', include('platform_core.gateway.urls')),
+    path('api/events/', include('platform_core.events.urls')),
+    path('api/websocket/', include('platform_core.websocket.urls')),
+    path('api/alerts/', include('platform_core.alerts.urls')),
+    path('metrics/', include('platform_core.monitoring.urls')),
+    path('health/', include('platform_core.health.urls')),
 ]
