@@ -1,0 +1,82 @@
+module:
+  id: portfolio_monitoring
+  name: Portfolio Monitoring & Analytics
+  version: 1.0.0
+  description: Comprehensive portfolio-level analytics, performance tracking, and ILPA/GIPS compliant reporting
+  author: EnterpriseLand Team
+  category: investment
+  tags:
+    - portfolio
+    - analytics
+    - performance
+    - reporting
+    - IRR
+    - MOIC
+    - ILPA
+    - GIPS
+
+dependencies:
+  platform_core: ">=1.0.0"
+  investment: ">=1.0.0"
+  reporting: ">=1.0.0"
+
+capabilities:
+  - portfolio_performance_tracking
+  - return_calculations
+  - risk_analysis
+  - benchmark_comparison
+  - regulatory_reporting
+  - real_time_alerts
+  - custom_kpi_builder
+
+permissions:
+  - portfolio.view
+  - portfolio.edit
+  - portfolio.analyze
+  - portfolio.export
+  - portfolio.configure_alerts
+
+api:
+  endpoints:
+    - path: /api/v1/portfolios/
+      methods: [GET, POST, PUT, DELETE]
+      description: Portfolio CRUD operations
+    - path: /api/v1/portfolios/{id}/performance/
+      methods: [GET]
+      description: Portfolio performance metrics
+    - path: /api/v1/portfolios/{id}/holdings/
+      methods: [GET, POST]
+      description: Portfolio holdings management
+    - path: /api/v1/portfolios/analytics/
+      methods: [GET, POST]
+      description: Advanced analytics and calculations
+    - path: /api/v1/portfolios/reports/
+      methods: [GET, POST]
+      description: ILPA/GIPS compliant reporting
+    - path: /api/v1/portfolios/alerts/
+      methods: [GET, POST, PUT, DELETE]
+      description: Alert configuration and management
+
+hooks:
+  - on_deal_closed: Update portfolio holdings
+  - on_valuation_update: Recalculate performance
+  - on_distribution: Update cash flows
+  - on_report_schedule: Generate scheduled reports
+
+configuration:
+  performance_calculation_method:
+    type: choice
+    choices: [time_weighted, money_weighted, modified_dietz]
+    default: time_weighted
+  reporting_currency:
+    type: string
+    default: USD
+  benchmark_indices:
+    type: list
+    default: [SP500, MSCI_WORLD, FTSE_100]
+  alert_thresholds:
+    type: dict
+    default:
+      irr_decline: 5.0
+      concentration_risk: 25.0
+      liquidity_warning: 10.0

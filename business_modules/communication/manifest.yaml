@@ -1,0 +1,177 @@
+module:
+  name: communication
+  version: "1.0.0"
+  description: "Unified Communication Hub for messaging, notifications, and collaboration"
+  author: "EnterpriseLand Platform Team"
+  
+metadata:
+  display_name: "Communication Hub"
+  icon: "message-circle"
+  category: "collaboration"
+  tags:
+    - messaging
+    - notifications
+    - chat
+    - collaboration
+    - video-conferencing
+  
+dependencies:
+  required:
+    - platform-core
+    - authentication
+  optional:
+    - document-management
+    - task-management
+    - calendar
+  
+features:
+  messaging:
+    enabled: true
+    capabilities:
+      - direct_messages
+      - group_channels
+      - thread_discussions
+      - rich_text_formatting
+      - file_attachments
+      - message_reactions
+      - mentions
+      - search
+      - encryption
+  
+  notifications:
+    enabled: true
+    channels:
+      - in_app
+      - email
+      - sms
+      - push
+    features:
+      - templates
+      - scheduling
+      - batching
+      - preferences
+  
+  collaboration:
+    enabled: true
+    integrations:
+      - video_calling
+      - screen_sharing
+      - document_collaboration
+      - meeting_scheduling
+  
+  real_time:
+    enabled: true
+    transport:
+      - websocket
+      - server_sent_events
+    features:
+      - typing_indicators
+      - presence
+      - read_receipts
+      - live_updates
+  
+permissions:
+  - communication.view_message
+  - communication.send_message
+  - communication.delete_message
+  - communication.create_channel
+  - communication.manage_channel
+  - communication.view_notification
+  - communication.manage_notification_preferences
+  - communication.start_video_call
+  - communication.schedule_meeting
+  
+api:
+  endpoints:
+    - /api/communication/messages/
+    - /api/communication/channels/
+    - /api/communication/threads/
+    - /api/communication/notifications/
+    - /api/communication/preferences/
+    - /api/communication/meetings/
+    - /api/communication/search/
+    - /api/communication/analytics/
+  
+  websocket:
+    - /ws/communication/messages/
+    - /ws/communication/notifications/
+    - /ws/communication/presence/
+  
+configuration:
+  message_retention_days: 365
+  max_message_length: 5000
+  max_file_size_mb: 100
+  allowed_file_types:
+    - image/*
+    - application/pdf
+    - application/msword
+    - application/vnd.openxmlformats-officedocument.*
+    - text/*
+    - video/mp4
+    - audio/*
+  
+  notification_settings:
+    email_provider: "sendgrid"
+    sms_provider: "twilio"
+    push_provider: "firebase"
+    batch_interval_minutes: 5
+    max_batch_size: 100
+  
+  video_conferencing:
+    provider: "agora"
+    max_participants: 50
+    recording_enabled: true
+    screen_share_enabled: true
+  
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation_days: 90
+  
+database:
+  models:
+    - Message
+    - Channel
+    - Thread
+    - ChannelMember
+    - MessageReaction
+    - MessageAttachment
+    - Notification
+    - NotificationPreference
+    - Meeting
+    - VideoCall
+  
+  indexes:
+    - message_created_at
+    - channel_member_user
+    - notification_user_read
+    - message_search_vector
+  
+tasks:
+  - send_notification_batch
+  - process_message_attachments
+  - cleanup_old_messages
+  - update_channel_statistics
+  - send_email_notifications
+  - send_sms_notifications
+  - send_push_notifications
+  
+events:
+  published:
+    - message.created
+    - message.updated
+    - message.deleted
+    - channel.created
+    - channel.member_added
+    - channel.member_removed
+    - notification.sent
+    - meeting.scheduled
+    - video_call.started
+    - video_call.ended
+  
+  subscribed:
+    - user.created
+    - user.deleted
+    - task.assigned
+    - document.shared
+    - deal.status_changed

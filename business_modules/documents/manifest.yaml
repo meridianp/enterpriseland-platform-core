@@ -1,0 +1,154 @@
+name: documents
+version: 1.0.0
+description: Comprehensive document management system with versioning, search, and collaboration features
+author: EnterpriseLand Platform Team
+category: content_management
+
+dependencies:
+  - core
+  - authentication
+  - storage
+
+settings:
+  DOCUMENTS_STORAGE_BACKEND: 's3'
+  DOCUMENTS_MAX_FILE_SIZE: 52428800  # 50MB
+  DOCUMENTS_ALLOWED_EXTENSIONS:
+    - pdf
+    - doc
+    - docx
+    - xls
+    - xlsx
+    - ppt
+    - pptx
+    - txt
+    - jpg
+    - jpeg
+    - png
+    - gif
+    - csv
+    - zip
+    - rar
+  DOCUMENTS_PREVIEW_ENABLED: true
+  DOCUMENTS_OCR_ENABLED: true
+  DOCUMENTS_VIRUS_SCAN_ENABLED: true
+  DOCUMENTS_ENCRYPTION_ENABLED: true
+  DOCUMENTS_CDN_ENABLED: true
+  DOCUMENTS_ELASTICSEARCH_ENABLED: true
+  DOCUMENTS_VERSION_RETENTION_DAYS: 365
+  DOCUMENTS_SHARE_LINK_EXPIRY_DAYS: 30
+
+permissions:
+  - documents.view_document
+  - documents.add_document
+  - documents.change_document
+  - documents.delete_document
+  - documents.share_document
+  - documents.view_folder
+  - documents.add_folder
+  - documents.change_folder
+  - documents.delete_folder
+  - documents.manage_permissions
+  - documents.view_version
+  - documents.restore_version
+  - documents.bulk_operations
+  - documents.manage_templates
+
+features:
+  hierarchical_folders:
+    enabled: true
+    description: Organize documents in nested folder structures
+  
+  versioning:
+    enabled: true
+    description: Track document versions with diff tracking
+    
+  full_text_search:
+    enabled: true
+    description: Search document contents using Elasticsearch
+    
+  tagging:
+    enabled: true
+    description: Tag and categorize documents
+    
+  access_control:
+    enabled: true
+    description: Granular permissions for documents and folders
+    
+  sharing:
+    enabled: true
+    description: Share documents with expiring links
+    
+  audit_trail:
+    enabled: true
+    description: Track all document operations
+    
+  bulk_operations:
+    enabled: true
+    description: Bulk upload, download, move, and delete
+    
+  preview:
+    enabled: true
+    description: Generate document previews
+    
+  ocr:
+    enabled: true
+    description: Extract text from scanned documents
+    
+  templates:
+    enabled: true
+    description: Create and manage document templates
+    
+  metadata:
+    enabled: true
+    description: Extract and manage document metadata
+
+api_endpoints:
+  - /api/documents/
+  - /api/documents/folders/
+  - /api/documents/search/
+  - /api/documents/templates/
+  - /api/documents/bulk/
+  - /api/documents/shared-links/
+
+models:
+  - Document
+  - DocumentVersion
+  - Folder
+  - DocumentPermission
+  - DocumentTag
+  - DocumentTemplate
+  - SharedLink
+  - DocumentAudit
+
+services:
+  - DocumentService
+  - StorageService
+  - SearchService
+  - PreviewService
+  - OCRService
+  - VirusScanService
+  - EncryptionService
+  - PermissionService
+
+integrations:
+  - vdr: Virtual Data Room integration
+  - s3: AWS S3 storage backend
+  - elasticsearch: Full-text search
+  - redis: Caching and job queue
+  - celery: Async task processing
+  - cdn: Content delivery network
+
+health_checks:
+  - storage_connectivity
+  - elasticsearch_connectivity
+  - virus_scanner_status
+  - preview_service_status
+
+metrics:
+  - documents_created
+  - documents_downloaded
+  - storage_used
+  - search_queries
+  - preview_generated
+  - ocr_processed
+  - virus_scans_performed

@@ -1,0 +1,138 @@
+module:
+  id: reporting
+  name: Reporting and Business Intelligence Module
+  version: 1.0.0
+  description: Comprehensive reporting and business intelligence module with advanced analytics and visualization capabilities
+  author: EnterpriseLand
+  dependencies:
+    - core
+    - documents
+    - investment
+  
+  features:
+    - report_builder
+    - dashboard_designer
+    - data_visualization
+    - analytics_engine
+    - export_capabilities
+    - scheduling
+    - collaboration
+    - real_time_data
+    - predictive_analytics
+    - custom_metrics
+
+  permissions:
+    - reporting.view_report
+    - reporting.create_report
+    - reporting.edit_report
+    - reporting.delete_report
+    - reporting.export_report
+    - reporting.share_report
+    - reporting.view_dashboard
+    - reporting.create_dashboard
+    - reporting.edit_dashboard
+    - reporting.delete_dashboard
+    - reporting.manage_data_sources
+    - reporting.execute_analytics
+    - reporting.schedule_reports
+    - reporting.view_analytics
+
+  settings:
+    REPORTING_CACHE_TIMEOUT: 3600  # 1 hour
+    REPORTING_MAX_EXPORT_ROWS: 100000
+    REPORTING_ENABLE_REALTIME: true
+    REPORTING_ENABLE_PREDICTIVE: true
+    REPORTING_DEFAULT_THEME: "professional"
+    REPORTING_CHART_LIBRARY: "recharts"
+    REPORTING_EXPORT_FORMATS: ["pdf", "excel", "csv", "json", "png"]
+    REPORTING_MAX_CONCURRENT_REPORTS: 10
+    REPORTING_DATA_RETENTION_DAYS: 90
+    REPORTING_ENABLE_COLLABORATION: true
+    REPORTING_VISUALIZATION_TYPES:
+      - line_chart
+      - bar_chart
+      - pie_chart
+      - scatter_plot
+      - heatmap
+      - treemap
+      - geographic_map
+      - gantt_chart
+      - funnel_chart
+      - waterfall_chart
+      - radar_chart
+      - bubble_chart
+      - sankey_diagram
+      - box_plot
+      - histogram
+
+  database:
+    models:
+      - Report
+      - Dashboard
+      - Widget
+      - DataSource
+      - ReportTemplate
+      - ReportSchedule
+      - ReportExecution
+      - ReportExport
+      - Visualization
+      - Metric
+      - Alert
+      - ReportShare
+      - DashboardShare
+      - AnalyticsQuery
+      - DataTransformation
+
+  api:
+    endpoints:
+      - /api/reporting/reports/
+      - /api/reporting/dashboards/
+      - /api/reporting/widgets/
+      - /api/reporting/data-sources/
+      - /api/reporting/templates/
+      - /api/reporting/schedules/
+      - /api/reporting/executions/
+      - /api/reporting/exports/
+      - /api/reporting/visualizations/
+      - /api/reporting/metrics/
+      - /api/reporting/alerts/
+      - /api/reporting/analytics/
+      - /api/reporting/query-builder/
+
+  integrations:
+    - name: "postgresql"
+      type: "database"
+      description: "PostgreSQL data source connector"
+    - name: "mysql"
+      type: "database"
+      description: "MySQL data source connector"
+    - name: "mongodb"
+      type: "database"
+      description: "MongoDB data source connector"
+    - name: "elasticsearch"
+      type: "search"
+      description: "Elasticsearch data source for analytics"
+    - name: "redis"
+      type: "cache"
+      description: "Redis for report caching"
+    - name: "celery"
+      type: "task_queue"
+      description: "Celery for async report generation"
+    - name: "pandas"
+      type: "analytics"
+      description: "Pandas for data analysis"
+    - name: "scikit-learn"
+      type: "ml"
+      description: "Scikit-learn for predictive analytics"
+
+  ui_components:
+    - report_builder
+    - dashboard_designer
+    - chart_editor
+    - data_source_manager
+    - query_builder
+    - metric_designer
+    - alert_configurator
+    - export_wizard
+    - schedule_manager
+    - visualization_gallery

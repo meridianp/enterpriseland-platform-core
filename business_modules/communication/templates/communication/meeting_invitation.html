@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Invitation: {{ meeting.title }}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #215788;">Meeting Invitation</h2>
+        
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #215788;">{{ meeting.title }}</h3>
+            
+            <p><strong>Organizer:</strong> {{ meeting.organizer.get_full_name }}</p>
+            <p><strong>Date:</strong> {{ meeting.scheduled_start|date:"l, F j, Y" }}</p>
+            <p><strong>Time:</strong> {{ meeting.scheduled_start|time:"g:i A" }} - {{ meeting.scheduled_end|time:"g:i A" }}</p>
+            
+            {% if meeting.description %}
+            <p><strong>Description:</strong></p>
+            <p>{{ meeting.description|linebreaks }}</p>
+            {% endif %}
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <h4 style="color: #215788;">Meeting Details</h4>
+            <p><strong>Meeting URL:</strong> <a href="{{ meeting.meeting_url }}" style="color: #00B7B2;">Join Meeting</a></p>
+            {% if meeting.passcode %}
+            <p><strong>Passcode:</strong> {{ meeting.passcode }}</p>
+            {% endif %}
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <h4 style="color: #215788;">Participants</h4>
+            <ul>
+                {% for participant in meeting.meeting_participants.all %}
+                <li>{{ participant.user.get_full_name }} {% if participant.role == "HOST" %}(Host){% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ meeting.meeting_url }}" style="display: inline-block; padding: 12px 30px; background-color: #215788; color: #ffffff; text-decoration: none; border-radius: 4px;">Join Meeting</a>
+        </div>
+        
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        
+        <div style="font-size: 14px; color: #666;">
+            <p>Add to calendar:</p>
+            <p>This meeting has been scheduled in EnterpriseLand. You will receive a reminder 15 minutes before the meeting starts.</p>
+        </div>
+    </div>
+</body>
+</html>
